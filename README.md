@@ -30,7 +30,7 @@ Install directly from Claude Code:
 /plugin install frontend-slides@frontend-slides
 ```
 
-Then use it by typing `/frontend-slides` in Claude Code.
+Then use it by typing `/frontend-slides:frontend-slides` in Claude Code. Claude Code namespaces plugin-installed skills as `/plugin-name:skill-name`.
 
 ### Claude Code Manual Installation
 
@@ -52,7 +52,7 @@ Or clone directly:
 git clone https://github.com/zarazhangrui/frontend-slides.git ~/.claude/skills/frontend-slides
 ```
 
-Then use it by typing `/frontend-slides` in Claude Code.
+Then use it by typing `/frontend-slides` in Claude Code. Standalone skills are not namespaced.
 
 ### Other Coding Agents
 
@@ -65,17 +65,19 @@ Agents such as Codex, Kimi Code, OpenCode, Gemini CLI, or other local coding ass
 - `bold-template-pack/`
 - `scripts/`
 
-The Claude Code plugin gives Claude Code a marketplace install flow and `/frontend-slides` command. Other agents usually do not use that command surface; they should follow `SKILL.md` directly inside a workspace.
+The Claude Code plugin gives Claude Code a marketplace install flow and `/frontend-slides:frontend-slides` command. Other agents usually do not use that command surface; they should follow `SKILL.md` directly inside a workspace.
 
 ## Usage
 
 ### Create a New Presentation
 
 ```text
-/frontend-slides
+/frontend-slides:frontend-slides
 
 > "I want to create a pitch deck for my AI startup"
 ```
+
+If installed manually as a standalone Claude Code skill, use `/frontend-slides` instead.
 
 In non-Claude agents, ask the agent to use the Frontend Slides skill and point it at this repo or `SKILL.md`.
 
@@ -89,8 +91,8 @@ The skill will:
 
 ### Convert a PowerPoint
 
-```
-/frontend-slides
+```text
+/frontend-slides:frontend-slides
 
 > "Convert my presentation.pptx to a web slideshow"
 ```
@@ -553,7 +555,7 @@ Uses [Playwright](https://playwright.dev) to screenshot each slide at 1920×1080
 ## Requirements
 
 - A local coding agent with filesystem access and the ability to run shell commands
-- Claude Code is required only for the marketplace plugin install and `/frontend-slides` command
+- Claude Code is required only for the marketplace plugin install and `/frontend-slides:frontend-slides` command
 - For PPT conversion: Python with `python-pptx` library
 - For URL deployment: Node.js + Vercel account (free)
 - For PDF export: Node.js (Playwright installs automatically)
