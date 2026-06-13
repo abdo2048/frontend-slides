@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agentic Pulse</title>
+  <link rel="stylesheet" href="./tokens.css" />
+  <link rel="stylesheet" href="./base.css" />
+  <style>
+    :root {
+      --pulse-cycle: 3000ms;
+      --pulse-size: 280px;
+    }
+
+    body {
+      min-height: 100dvh;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle, color-mix(in srgb, var(--brand-primary) 12%, transparent), transparent 36%),
+        var(--bg-main);
+    }
+
+    .pulse-wrap {
+      width: min(80vw, var(--pulse-size));
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+    }
+
+    .pulse-svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .pulse-core {
+      fill: color-mix(in srgb, var(--brand-primary) 56%, var(--surface-1) 44%);
+      stroke: var(--text-main);
+      stroke-width: 3;
+      filter: drop-shadow(0 0 24px color-mix(in srgb, var(--brand-primary) 42%, transparent));
+    }
+
+    .pulse-ripple {
+      fill: none;
+      stroke: var(--brand-primary);
+      stroke-width: 3;
+      opacity: 0;
+      transform-origin: center;
+      animation: ripple var(--pulse-cycle) ease-out infinite;
+    }
+
+    .pulse-ripple:nth-of-type(2) { animation-delay: 1s; }
+    .pulse-ripple:nth-of-type(3) { animation-delay: 2s; }
+
+    .pulse-glow {
+      fill: color-mix(in srgb, var(--brand-secondary) 24%, transparent);
+      filter: blur(18px);
+      opacity: 0.72;
+    }
+
+    @keyframes ripple {
+      0% {
+        transform: scale(0.35);
+        opacity: 0;
+      }
+      12% {
+        opacity: 0.75;
+      }
+      100% {
+        transform: scale(1.55);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="pulse-wrap" aria-label="Agentic Pulse component">
+    <svg class="pulse-svg" viewBox="0 0 280 280" role="img" aria-labelledby="pulse-title pulse-desc">
+      <title id="pulse-title">Agentic Pulse</title>
+      <desc id="pulse-desc">A central circle emitting looping ripple waves every three seconds.</desc>
+      <circle class="pulse-glow" cx="140" cy="140" r="48"></circle>
+      <circle class="pulse-ripple" cx="140" cy="140" r="46"></circle>
+      <circle class="pulse-ripple" cx="140" cy="140" r="46"></circle>
+      <circle class="pulse-ripple" cx="140" cy="140" r="46"></circle>
+      <circle class="pulse-core" cx="140" cy="140" r="34"></circle>
+    </svg>
+  </div>
+</body>
+</html>

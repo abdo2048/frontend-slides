@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Glass Bento Card</title>
+  <link rel="stylesheet" href="./tokens.css" />
+  <link rel="stylesheet" href="./base.css" />
+  <style>
+    :root {
+      --card-glow-size: 240px;
+      --card-border-alpha: 0.12;
+      --card-hover-glow-alpha: 0.28;
+      --card-padding: var(--space-6);
+    }
+
+    body {
+      min-height: 100dvh;
+      display: grid;
+      place-items: center;
+      padding: var(--space-8);
+      background:
+        radial-gradient(circle at top left, color-mix(in srgb, var(--brand-secondary) 20%, transparent), transparent 42%),
+        radial-gradient(circle at bottom right, color-mix(in srgb, var(--brand-primary) 16%, transparent), transparent 36%),
+        var(--bg-main);
+    }
+
+    .glass-bento-card {
+      position: relative;
+      width: min(100%, 520px);
+      min-height: 340px;
+      display: grid;
+      grid-template-rows: auto auto 1fr auto;
+      gap: var(--space-4);
+      padding: var(--card-padding);
+      border-radius: var(--radius-2xl);
+      background: linear-gradient(
+        145deg,
+        color-mix(in srgb, var(--glass-bg) 88%, var(--surface-1) 12%),
+        color-mix(in srgb, var(--glass-bg) 70%, var(--surface-2) 30%)
+      );
+      border: 1px solid color-mix(in srgb, var(--text-main) 12%, transparent);
+      backdrop-filter: blur(var(--glass-blur));
+      -webkit-backdrop-filter: blur(var(--glass-blur));
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      isolation: isolate;
+      transition:
+        transform var(--transition-slow),
+        box-shadow var(--transition-slow),
+        border-color var(--transition-slow);
+    }
+
+    .glass-bento-card::before,
+    .glass-bento-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+    }
+
+    .glass-bento-card::before {
+      padding: 1px;
+      background:
+        linear-gradient(135deg,
+          color-mix(in srgb, var(--brand-primary) 58%, transparent),
+          transparent 35%,
+          color-mix(in srgb, var(--brand-secondary) 68%, transparent)
+        );
+      -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      opacity: 0.38;
+      transition: opacity var(--transition-slow);
+    }
+
+    .glass-bento-card::after {
+      width: var(--card-glow-size);
+      height: var(--card-glow-size);
+      left: var(--pointer-x, 50%);
+      top: var(--pointer-y, 50%);
+      translate: -50% -50%;
+      background: radial-gradient(
+        circle,
+        color-mix(in srgb, var(--brand-primary) 32%, transparent) 0%,
+        color-mix(in srgb, var(--brand-secondary) 18%, transparent) 34%,
+        transparent 70%
+      );
+      opacity: 0;
+      transition: opacity var(--transition-slow);
+      filter: blur(8px);
+      z-index: -1;
+    }
+
+    .glass-bento-card:hover {
+      transform: translateY(-6px);
+      border-color: color-mix(in srgb, var(--brand-primary) 24%, var(--text-main) 10%);
+      box-shadow:
+        0 16px 56px rgba(0, 0, 0, 0.58),
+        0 0 0 1px color-mix(in srgb, var(--brand-primary) 12%, transparent);
+    }
+
+    .glass-bento-card:hover::before,
+    .glass-bento-card:hover::after {
+      opacity: 1;
+    }
+
+    .eyebrow {
+      width: fit-content;
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--radius-full);
+      background: color-mix(in srgb, var(--brand-primary) 16%, transparent);
+      color: var(--brand-primary);
+      font-size: var(--text-xs);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .glass-bento-card h2 {
+      font-size: var(--text-2xl);
+      max-width: 12ch;
+    }
+
+    .glass-bento-card p {
+      color: var(--text-muted);
+      font-size: var(--text-base);
+      max-width: 34ch;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--space-3);
+    }
+
+    .meta-cell {
+      padding: var(--space-4);
+      border-radius: var(--radius-lg);
+      background: color-mix(in srgb, var(--glass-bg) 88%, var(--surface-2) 12%);
+      border: 1px solid color-mix(in srgb, var(--text-main) 8%, transparent);
+    }
+
+    .meta-cell strong {
+      display: block;
+      color: var(--text-main);
+      font-size: var(--text-lg);
+    }
+
+    .meta-cell span {
+      display: block;
+      margin-top: var(--space-1);
+      color: var(--text-faint);
+      font-size: var(--text-xs);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+  <article class="glass-bento-card" aria-label="Glass Bento Card component">
+    <span class="eyebrow">Signal Layer</span>
+    <h2>Frosted bento card with responsive hover glow.</h2>
+    <p>
+      A reusable glass surface for metric clusters, AI summaries, or featured slide moments.
+      The border glow tracks pointer movement while keeping the neutral canonical palette intact.
+    </p>
+
+    <div class="meta-grid" aria-label="Card metrics">
+      <div class="meta-cell"><strong>05</strong><span>Widgets</span></div>
+      <div class="meta-cell"><strong>24ms</strong><span>Latency</span></div>
+      <div class="meta-cell"><strong>99.2%</strong><span>Confidence</span></div>
+    </div>
+  </article>
+
+  <script>
+    const card = document.querySelector('.glass-bento-card');
+
+    card.addEventListener('pointermove', (event) => {
+      const rect = card.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      card.style.setProperty('--pointer-x', `${x}px`);
+      card.style.setProperty('--pointer-y', `${y}px`);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Knowledge Graph</title>
+  <link rel="stylesheet" href="./tokens.css" />
+  <link rel="stylesheet" href="./base.css" />
+  <style>
+    :root {
+      --kg-cycle: var(--transition-slow, 360ms);
+      --kg-node-size: 18;
+      --kg-line-width: 2;
+      --kg-loop-duration: 4800;
+      --kg-float-distance: 10;
+    }
+
+    body {
+      display: grid;
+      place-items: center;
+      padding: var(--space-8);
+      background:
+        radial-gradient(circle at top, color-mix(in srgb, var(--brand-primary) 12%, transparent), transparent 42%),
+        var(--bg-main);
+    }
+
+    .knowledge-graph {
+      width: min(100%, 860px);
+      aspect-ratio: 16 / 10;
+      padding: var(--space-6);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-2xl);
+      background: var(--glass-bg);
+      backdrop-filter: blur(var(--glass-blur));
+      -webkit-backdrop-filter: blur(var(--glass-blur));
+      box-shadow: var(--shadow-lg);
+    }
+
+    .kg-svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .kg-line {
+      stroke: color-mix(in srgb, var(--brand-primary) 72%, var(--text-main) 28%);
+      stroke-width: var(--kg-line-width);
+      stroke-linecap: round;
+      fill: none;
+      opacity: 0.55;
+      filter: drop-shadow(0 0 10px color-mix(in srgb, var(--brand-primary) 35%, transparent));
+    }
+
+    .kg-node circle {
+      fill: color-mix(in srgb, var(--surface-2) 76%, var(--brand-secondary) 24%);
+      stroke: var(--brand-primary);
+      stroke-width: 2;
+      filter: drop-shadow(0 0 14px color-mix(in srgb, var(--brand-primary) 35%, transparent));
+    }
+
+    .kg-node--core circle {
+      fill: color-mix(in srgb, var(--brand-secondary) 58%, var(--surface-1) 42%);
+      stroke: var(--text-main);
+      stroke-width: 2.5;
+    }
+
+    .kg-node text {
+      fill: var(--text-main);
+      font-size: var(--text-sm);
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      text-anchor: middle;
+      dominant-baseline: middle;
+      pointer-events: none;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <section class="knowledge-graph" aria-label="Animated knowledge graph component">
+    <svg class="kg-svg" viewBox="0 0 900 560" role="img" aria-labelledby="kg-title kg-desc">
+      <title id="kg-title">Knowledge Graph</title>
+      <desc id="kg-desc">Five connected nodes floating with animated paths between them.</desc>
+
+      <g class="kg-lines">
+        <line class="kg-line" x1="450" y1="280" x2="180" y2="120"></line>
+        <line class="kg-line" x1="450" y1="280" x2="720" y2="120"></line>
+        <line class="kg-line" x1="450" y1="280" x2="170" y2="430"></line>
+        <line class="kg-line" x1="450" y1="280" x2="730" y2="430"></line>
+        <line class="kg-line" x1="180" y1="120" x2="720" y2="120"></line>
+        <line class="kg-line" x1="170" y1="430" x2="730" y2="430"></line>
+      </g>
+
+      <g class="kg-node kg-node--core" data-float-x="0" data-float-y="0" transform="translate(450 280)">
+        <circle r="42"></circle>
+        <text y="2">Core</text>
+      </g>
+
+      <g class="kg-node" data-float-x="-5" data-float-y="-8" transform="translate(180 120)">
+        <circle r="30"></circle>
+        <text y="1">Data</text>
+      </g>
+
+      <g class="kg-node" data-float-x="6" data-float-y="-10" transform="translate(720 120)">
+        <circle r="30"></circle>
+        <text y="1">UI</text>
+      </g>
+
+      <g class="kg-node" data-float-x="-8" data-float-y="6" transform="translate(170 430)">
+        <circle r="30"></circle>
+        <text y="1">API</text>
+      </g>
+
+      <g class="kg-node" data-float-x="9" data-float-y="7" transform="translate(730 430)">
+        <circle r="30"></circle>
+        <text y="1">Flow</text>
+      </g>
+    </svg>
+  </section>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js"></script>
+  <script>
+    const graph = document.querySelector('.kg-svg');
+    const nodes = [...graph.querySelectorAll('.kg-node')];
+    const lines = [...graph.querySelectorAll('.kg-line')];
+
+    const lineMap = [
+      [0, 1],
+      [0, 2],
+      [0, 3],
+      [0, 4],
+      [1, 2],
+      [3, 4]
+    ];
+
+    function getCenter(node) {
+      const matrix = node.transform.baseVal.consolidate()?.matrix;
+      return matrix ? { x: matrix.e, y: matrix.f } : { x: 0, y: 0 };
+    }
+
+    function syncLines() {
+      lineMap.forEach(([fromIndex, toIndex], idx) => {
+        const from = getCenter(nodes[fromIndex]);
+        const to = getCenter(nodes[toIndex]);
+        lines[idx].setAttribute('x1', from.x);
+        lines[idx].setAttribute('y1', from.y);
+        lines[idx].setAttribute('x2', to.x);
+        lines[idx].setAttribute('y2', to.y);
+      });
+    }
+
+    nodes.forEach((node, index) => {
+      const base = node.getAttribute('transform').match(/translate\(([^\s]+)\s+([^\s]+)\)/);
+      const baseX = Number(base[1]);
+      const baseY = Number(base[2]);
+      const offsetX = Number(node.dataset.floatX || 0);
+      const offsetY = Number(node.dataset.floatY || 0);
+
+      anime({
+        targets: node,
+        translateX: [0, offsetX],
+        translateY: [0, offsetY],
+        duration: 4200 + index * 350,
+        delay: index * 120,
+        direction: 'alternate',
+        easing: 'easeInOutSine',
+        loop: true,
+        update: () => {
+          const tx = anime.get(node, 'translateX') || 0;
+          const ty = anime.get(node, 'translateY') || 0;
+          node.setAttribute('transform', `translate(${baseX + tx} ${baseY + ty})`);
+          syncLines();
+        }
+      });
+    });
+
+    lines.forEach((line, index) => {
+      const length = line.getTotalLength();
+      line.style.strokeDasharray = `${length}`;
+      line.style.strokeDashoffset = `${length}`;
+
+      anime({
+        targets: line,
+        strokeDashoffset: [length, 0],
+        opacity: [0.18, 0.7],
+        duration: 2200 + index * 120,
+        delay: index * 180,
+        direction: 'alternate',
+        easing: 'easeInOutSine',
+        loop: true
+      });
+    });
+
+    syncLines();
+  </script>
+</body>
+</html>

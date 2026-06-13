@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Token Stream</title>
+  <link rel="stylesheet" href="./tokens.css" />
+  <link rel="stylesheet" href="./base.css" />
+  <style>
+    :root {
+      --stream-caret-width: 2px;
+      --stream-max-width: 760px;
+      --stream-padding: var(--space-6);
+      --stream-line-gap: var(--space-3);
+    }
+
+    body {
+      min-height: 100dvh;
+      display: grid;
+      place-items: center;
+      padding: var(--space-8);
+      background:
+        radial-gradient(circle at top right, color-mix(in srgb, var(--brand-primary) 12%, transparent), transparent 40%),
+        var(--bg-main);
+    }
+
+    .token-stream {
+      width: min(100%, var(--stream-max-width));
+      min-height: 360px;
+      padding: var(--stream-padding);
+      border-radius: var(--radius-2xl);
+      border: 1px solid var(--glass-border);
+      background: color-mix(in srgb, var(--glass-bg) 88%, var(--surface-offset) 12%);
+      backdrop-filter: blur(var(--glass-blur));
+      -webkit-backdrop-filter: blur(var(--glass-blur));
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .token-stream::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 4px;
+      background: linear-gradient(var(--brand-primary), var(--brand-secondary));
+      opacity: 0.72;
+    }
+
+    .token-stream__header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      margin-bottom: var(--space-5);
+      color: var(--text-faint);
+      font-size: var(--text-xs);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .stream-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: var(--radius-full);
+      background: var(--brand-primary);
+      box-shadow: 0 0 16px color-mix(in srgb, var(--brand-primary) 46%, transparent);
+    }
+
+    .token-stream pre {
+      margin: 0;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: var(--text-main);
+      font-family: var(--font-mono);
+      font-size: var(--text-sm);
+      line-height: 1.85;
+      white-space: pre-wrap;
+    }
+
+    .token-stream__output {
+      min-height: 240px;
+    }
+
+    .token-stream__caret {
+      display: inline-block;
+      width: var(--stream-caret-width);
+      height: 1.15em;
+      margin-left: 2px;
+      vertical-align: text-bottom;
+      background: var(--brand-primary);
+      box-shadow: 0 0 12px color-mix(in srgb, var(--brand-primary) 38%, transparent);
+      animation: blink 1s steps(1) infinite;
+    }
+
+    .token-keyword { color: var(--brand-secondary); }
+    .token-string { color: var(--brand-primary); }
+    .token-comment { color: var(--text-faint); }
+    .token-function { color: var(--text-main); font-weight: 600; }
+
+    @keyframes blink {
+      0%, 50% { opacity: 1; }
+      50.01%, 100% { opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <section class="token-stream" aria-label="Token Stream component">
+    <div class="token-stream__header">
+      <span class="stream-dot" aria-hidden="true"></span>
+      <span>Live generation stream</span>
+    </div>
+    <pre class="token-stream__output" id="stream-output"></pre>
+  </section>
+
+  <script>
+    const output = document.getElementById('stream-output');
+    const lines = [
+      '<span class="token-comment">// Building a reusable slide primitive</span>',
+      '<span class="token-keyword">const</span> palette = { primary: <span class="token-string">"var(--brand-primary)"</span>, secondary: <span class="token-string">"var(--brand-secondary)"</span> };',
+      '<span class="token-keyword">function</span> <span class="token-function">composeSlide</span>() {',
+      '  <span class="token-keyword">return</span> createComponent(<span class="token-string">"signal-card"</span>, palette);',
+      '}',
+      '',
+      '<span class="token-comment">// Stream complete</span>'
+    ];
+
+    const joined = lines.join('\n');
+    let pointer = 0;
+
+    function render() {
+      output.innerHTML = joined.slice(0, pointer) + '<span class="token-stream__caret"></span>';
+      if (pointer < joined.length) {
+        const currentChar = joined[pointer];
+        const delay = currentChar === '\n' ? 160 : currentChar === ' ' ? 22 : 38;
+        pointer += 1;
+        setTimeout(render, delay);
+      }
+    }
+
+    render();
+  </script>
+</body>
+</html>
