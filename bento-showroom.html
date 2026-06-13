@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="cyan">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bento Showroom — Component Library</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ═══════════════════════════════════════════════════════════════
+       DESIGN TOKENS — Neutral Canonical Brand
+       Mirrors library/tokens.css so this file is fully self-contained
+       ═══════════════════════════════════════════════════════════════ */
+    :root {
+      /* Surfaces */
+      --bg-main:           #1a1a1d;
+      --surface-1:         #222226;
+      --surface-2:         #2a2a2f;
+      --surface-offset:    #141416;
+
+      /* Typography */
+      --text-main:         #f0eeeb;
+      --text-muted:        #a8a6a2;
+      --text-faint:        #6b6966;
+
+      /* Brand (Cyan) */
+      --brand-primary:     #00d4e8;
+      --brand-primary-dim: #009dae;
+      --brand-secondary:   #5b21b6;
+      --brand-secondary-dim:#3d1480;
+
+      /* Glass */
+      --glass-bg:          rgba(255,255,255,0.05);
+      --glass-blur:        10px;
+      --glass-border:      rgba(255,255,255,0.08);
+
+      /* Type scale */
+      --text-xs:    clamp(0.75rem,  0.7rem  + 0.25vw, 0.875rem);
+      --text-sm:    clamp(0.875rem, 0.8rem  + 0.35vw, 1rem);
+      --text-base:  clamp(1rem,     0.95rem + 0.25vw, 1.125rem);
+      --text-lg:    clamp(1.125rem, 1rem    + 0.75vw, 1.5rem);
+      --text-xl:    clamp(1.5rem,   1.2rem  + 1.25vw, 2.25rem);
+      --text-2xl:   clamp(2rem,     1.2rem  + 2.5vw,  3.5rem);
+
+      /* Spacing (4px grid) */
+      --space-1: 0.25rem; --space-2: 0.5rem;  --space-3: 0.75rem;
+      --space-4: 1rem;    --space-5: 1.25rem; --space-6: 1.5rem;
+      --space-8: 2rem;    --space-10:2.5rem;  --space-12:3rem;
+      --space-16:4rem;
+
+      /* Radius */
+      --radius-sm:   0.25rem; --radius-md:  0.5rem;
+      --radius-lg:   0.75rem; --radius-xl:  1rem;
+      --radius-2xl:  1.5rem;  --radius-full:9999px;
+
+      /* Transitions */
+      --transition-fast:        120ms cubic-bezier(0.16,1,0.3,1);
+      --transition-interactive: 180ms cubic-bezier(0.16,1,0.3,1);
+      --transition-slow:        360ms cubic-bezier(0.16,1,0.3,1);
+
+      /* Shadows */
+      --shadow-sm:  0 1px 3px  rgba(0,0,0,0.35);
+      --shadow-md:  0 4px 14px rgba(0,0,0,0.45);
+      --shadow-lg:  0 12px 40px rgba(0,0,0,0.55);
+
+      /* Font families */
+      --font-display: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+      --font-body:    'Inter', 'Helvetica Neue', Arial, sans-serif;
+      --font-mono:    'Fira Code', 'Cascadia Code', 'Courier New', monospace;
+
+      /* Theme transition timing — used by the toggle */
+      --theme-transition: 480ms cubic-bezier(0.16,1,0.3,1);
+    }
+
+    /* Orange theme overrides */
+    [data-theme="orange"] {
+      --brand-primary:     #ff6b2b;
+      --brand-primary-dim: #d44d14;
+      --brand-secondary:   #c0392b;
+      --brand-secondary-dim:#962d22;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       BASE RESET
+       ═══════════════════════════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+    }
+
+    body {
+      font-family: var(--font-body);
+      font-size: var(--text-base);
+      color: var(--text-main);
+      background-color: var(--bg-main);
+      min-height: 100dvh;
+      padding: var(--space-6) var(--space-4) var(--space-16);
+      /* GPU composite layer for background transitions */
+      will-change: background-color;
+      transition: background-color var(--theme-transition);
+    }
+
+    img, picture, video, canvas, svg { display: block; max-width: 100%; }
+    button { cursor: pointer; background: none; border: none; font: inherit; color: inherit; }
+    a, button, [role="button"] {
+      transition:
+        color var(--transition-interactive),
+        background var(--transition-interactive),
+        border-color var(--transition-interactive),
+        box-shadow var(--transition-interactive);
+    }
+    :focus-visible {
+      outline: 2px solid var(--brand-primary);
+      outline-offset: 3px;
+      border-radius: var(--radius-sm);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       SHOWROOM LAYOUT
+       ═══════════════════════════════════════════════════════════════ */
+    .showroom-page {
+      max-width: 1320px;
+      margin-inline: auto;
+    }
+
+    /* ── Header ─────────────────────────────────────────────────── */
+    .showroom-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: var(--space-4);
+      margin-bottom: var(--space-8);
+    }
+
+    .showroom-header__meta {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .showroom-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-1) var(--space-3);
+      border-radius: var(--radius-full);
+      border: 1px solid color-mix(in srgb, var(--brand-primary) 28%, transparent);
+      background: color-mix(in srgb, var(--brand-primary) 10%, transparent);
+      color: var(--brand-primary);
+      font-size: var(--text-xs);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 700;
+      width: fit-content;
+      transition:
+        background var(--theme-transition),
+        border-color var(--theme-transition),
+        color var(--theme-transition);
+    }
+
+    .showroom-eyebrow__dot {
+      width: 6px;
+      height: 6px;
+      border-radius: var(--radius-full);
+      background: var(--brand-primary);
+      animation: blink-dot 2s ease-in-out infinite;
+      will-change: opacity;
+      transition: background var(--theme-transition);
+    }
+
+    @keyframes blink-dot {
+      0%,100% { opacity: 1; }
+      50%      { opacity: 0.28; }
+    }
+
+    .showroom-title {
+      font-size: var(--text-2xl);
+      font-weight: 700;
+      line-height: 1.1;
+    }
+
+    .showroom-title span {
+      color: var(--brand-primary);
+      transition: color var(--theme-transition);
+    }
+
+    /* ── Theme Toggle ───────────────────────────────────────────── */
+    .theme-toggle {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-5);
+      border-radius: var(--radius-full);
+      border: 1.5px solid color-mix(in srgb, var(--brand-primary) 42%, transparent);
+      background: color-mix(in srgb, var(--brand-primary) 8%, transparent);
+      color: var(--text-main);
+      font-size: var(--text-sm);
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      overflow: hidden;
+      transition:
+        background var(--theme-transition),
+        border-color var(--theme-transition),
+        transform var(--transition-interactive),
+        box-shadow var(--transition-interactive);
+      will-change: transform;
+    }
+
+    .theme-toggle::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg,
+        color-mix(in srgb, var(--brand-primary) 14%, transparent),
+        transparent
+      );
+      opacity: 0;
+      transition: opacity var(--transition-interactive);
+    }
+
+    .theme-toggle:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 28px color-mix(in srgb, var(--brand-primary) 28%, transparent);
+      border-color: color-mix(in srgb, var(--brand-primary) 68%, transparent);
+    }
+    .theme-toggle:hover::before { opacity: 1; }
+    .theme-toggle:active { transform: translateY(0); }
+
+    .theme-toggle__swatch {
+      display: flex;
+      gap: var(--space-1);
+      flex-shrink: 0;
+    }
+
+    .theme-toggle__swatch span {
+      width: 11px;
+      height: 11px;
+      border-radius: var(--radius-full);
+      transition: background var(--theme-transition), transform var(--transition-interactive);
+      will-change: transform, background;
+    }
+
+    .theme-toggle__swatch .dot-a { background: var(--brand-primary); }
+    .theme-toggle__swatch .dot-b { background: var(--brand-secondary); }
+
+    .theme-toggle:hover .theme-toggle__swatch span {
+      transform: scale(1.25);
+    }
+
+    /* ── Bento Grid ─────────────────────────────────────────────── */
+    /*
+     * Grid areas:
+     *   [ graph        | pulse   ]
+     *   [ bento-card   | terrain ]
+     *   [ token-stream ·········· ]
+     */
+    .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      grid-template-rows: auto;
+      gap: var(--space-4);
+    }
+
+    .bento-cell {
+      border-radius: var(--radius-2xl);
+      border: 1px solid color-mix(in srgb, var(--text-main) 8%, transparent);
+      background: color-mix(in srgb, var(--surface-1) 82%, var(--bg-main) 18%);
+      overflow: hidden;
+      position: relative;
+      /* GPU-composite entry animation */
+      will-change: transform, opacity;
+      animation: cell-enter 0.72s cubic-bezier(0.16,1,0.3,1) both;
+      transition:
+        border-color var(--theme-transition),
+        box-shadow var(--transition-slow);
+    }
+
+    .bento-cell:hover {
+      border-color: color-mix(in srgb, var(--brand-primary) 22%, transparent);
+      box-shadow: 0 0 42px color-mix(in srgb, var(--brand-primary) 10%, transparent), var(--shadow-md);
+    }
+
+    @keyframes cell-enter {
+      from {
+        opacity: 0;
+        transform: translateY(18px) scale(0.97);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    /* Stagger delays */
+    .bento-cell:nth-child(1) { animation-delay: 0ms; }
+    .bento-cell:nth-child(2) { animation-delay: 80ms; }
+    .bento-cell:nth-child(3) { animation-delay: 160ms; }
+    .bento-cell:nth-child(4) { animation-delay: 240ms; }
+    .bento-cell:nth-child(5) { animation-delay: 320ms; }
+
+    /* ── Cell spans (desktop: 12 columns) ─── */
+    .bento-cell--graph   { grid-column: span 7; }
+    .bento-cell--pulse   { grid-column: span 5; }
+    .bento-cell--bento   { grid-column: span 5; }
+    .bento-cell--terrain { grid-column: span 7; }
+    .bento-cell--stream  { grid-column: span 12; }
+
+    /* ── Cell label ─────────────────────────────────────────────── */
+    .bento-cell__label {
+      position: absolute;
+      top: var(--space-4);
+      left: var(--space-5);
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-1) var(--space-3);
+      border-radius: var(--radius-full);
+      background: color-mix(in srgb, var(--surface-offset) 78%, transparent);
+      border: 1px solid color-mix(in srgb, var(--text-main) 10%, transparent);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      color: var(--text-muted);
+      font-size: var(--text-xs);
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .bento-cell__label-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: var(--radius-full);
+      background: var(--brand-primary);
+      transition: background var(--theme-transition);
+      will-change: background;
+    }
+
+    /* ── Cell inner canvas ───────────────────────────────────────── */
+    .bento-inner {
+      width: 100%;
+      height: 100%;
+      min-height: 320px;
+      display: grid;
+      place-items: center;
+      padding: var(--space-10) var(--space-6) var(--space-6);
+    }
+
+    .bento-cell--stream .bento-inner {
+      padding: var(--space-10) var(--space-6) var(--space-6);
+      align-items: start;
+    }
+
+    /* ════════════════════════════════════════════════════════════════
+       COMPONENT 1 — KNOWLEDGE GRAPH
+       ════════════════════════════════════════════════════════════════ */
+    .knowledge-graph {
+      width: 100%;
+      max-width: 760px;
+      aspect-ratio: 16 / 9;
+      position: relative;
+    }
+
+    .kg-svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .kg-line {
+      stroke: color-mix(in srgb, var(--brand-primary) 72%, var(--text-main) 28%);
+      stroke-width: 2;
+      stroke-linecap: round;
+      fill: none;
+      opacity: 0.55;
+      filter: drop-shadow(0 0 10px color-mix(in srgb, var(--brand-primary) 35%, transparent));
+      will-change: opacity;
+      transition: stroke var(--theme-transition), filter var(--theme-transition);
+    }
+
+    .kg-node circle {
+      fill: color-mix(in srgb, var(--surface-2) 76%, var(--brand-secondary) 24%);
+      stroke: var(--brand-primary);
+      stroke-width: 2;
+      filter: drop-shadow(0 0 14px color-mix(in srgb, var(--brand-primary) 35%, transparent));
+      transition: fill var(--theme-transition), stroke var(--theme-transition), filter var(--theme-transition);
+    }
+
+    .kg-node--core circle {
+      fill: color-mix(in srgb, var(--brand-secondary) 58%, var(--surface-1) 42%);
+      stroke: var(--text-main);
+      stroke-width: 2.5;
+    }
+
+    .kg-node text {
+      fill: var(--text-main);
+      font-size: clamp(10px, 1.4vw, 14px);
+      font-weight: 600;
+      text-anchor: middle;
+      dominant-baseline: middle;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    /* ════════════════════════════════════════════════════════════════
+       COMPONENT 2 — GLASS BENTO CARD
+       ════════════════════════════════════════════════════════════════ */
+    .glass-bento-card {
+      position: relative;
+      width: 100%;
+      max-width: 420px;
+      display: grid;
+      grid-template-rows: auto auto 1fr auto;
+      gap: var(--space-4);
+      padding: var(--space-6);
+      border-radius: var(--radius-2xl);
+      background: linear-gradient(
+        145deg,
+        color-mix(in srgb, var(--glass-bg) 88%, var(--surface-1) 12%),
+        color-mix(in srgb, var(--glass-bg) 70%, var(--surface-2) 30%)
+      );
+      border: 1px solid color-mix(in srgb, var(--text-main) 12%, transparent);
+      backdrop-filter: blur(var(--glass-blur));
+      -webkit-backdrop-filter: blur(var(--glass-blur));
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      isolation: isolate;
+      will-change: transform;
+      transition:
+        transform var(--transition-slow),
+        box-shadow var(--transition-slow),
+        border-color var(--transition-slow);
+    }
+
+    .glass-bento-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 1px;
+      background: linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--brand-primary) 58%, transparent),
+        transparent 35%,
+        color-mix(in srgb, var(--brand-secondary) 68%, transparent)
+      );
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      opacity: 0.38;
+      pointer-events: none;
+      transition: opacity var(--transition-slow);
+    }
+
+    .glass-bento-card::after {
+      content: "";
+      position: absolute;
+      width: 240px;
+      height: 240px;
+      left: var(--pointer-x, 50%);
+      top: var(--pointer-y, 50%);
+      translate: -50% -50%;
+      background: radial-gradient(
+        circle,
+        color-mix(in srgb, var(--brand-primary) 32%, transparent) 0%,
+        color-mix(in srgb, var(--brand-secondary) 18%, transparent) 34%,
+        transparent 70%
+      );
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--transition-slow);
+      filter: blur(8px);
+      z-index: -1;
+      border-radius: inherit;
+      will-change: opacity;
+    }
+
+    .glass-bento-card:hover {
+      transform: translateY(-6px);
+      border-color: color-mix(in srgb, var(--brand-primary) 28%, transparent);
+      box-shadow:
+        0 16px 56px rgba(0,0,0,0.58),
+        0 0 0 1px color-mix(in srgb, var(--brand-primary) 12%, transparent);
+    }
+    .glass-bento-card:hover::before { opacity: 1; }
+    .glass-bento-card:hover::after  { opacity: 1; }
+
+    .eyebrow {
+      width: fit-content;
+      padding: var(--space-1) var(--space-3);
+      border-radius: var(--radius-full);
+      background: color-mix(in srgb, var(--brand-primary) 16%, transparent);
+      color: var(--brand-primary);
+      font-size: var(--text-xs);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 700;
+      transition: background var(--theme-transition), color var(--theme-transition);
+    }
+
+    .glass-bento-card h2 {
+      font-size: var(--text-lg);
+      max-width: 18ch;
+    }
+
+    .glass-bento-card p {
+      color: var(--text-muted);
+      font-size: var(--text-sm);
+      max-width: 34ch;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--space-2);
+    }
+
+    .meta-cell {
+      padding: var(--space-3);
+      border-radius: var(--radius-md);
+      background: color-mix(in srgb, var(--glass-bg) 88%, var(--surface-2) 12%);
+      border: 1px solid color-mix(in srgb, var(--text-main) 8%, transparent);
+    }
+
+    .meta-cell strong {
+      display: block;
+      color: var(--text-main);
+      font-size: var(--text-base);
+    }
+
+    .meta-cell span {
+      display: block;
+      margin-top: var(--space-1);
+      color: var(--text-faint);
+      font-size: var(--text-xs);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    /* ════════════════════════════════════════════════════════════════
+       COMPONENT 3 — AGENTIC PULSE
+       ════════════════════════════════════════════════════════════════ */
+    .pulse-wrap {
+      width: clamp(180px, 36%, 260px);
+      aspect-ratio: 1;
+    }
+
+    .pulse-svg { width: 100%; height: 100%; overflow: visible; }
+
+    .pulse-glow {
+      fill: color-mix(in srgb, var(--brand-secondary) 24%, transparent);
+      filter: blur(18px);
+      opacity: 0.72;
+      transition: fill var(--theme-transition);
+    }
+
+    .pulse-ripple {
+      fill: none;
+      stroke: var(--brand-primary);
+      stroke-width: 3;
+      opacity: 0;
+      transform-origin: center;
+      will-change: transform, opacity;
+      animation: ripple 3s ease-out infinite;
+      transition: stroke var(--theme-transition);
+    }
+
+    .pulse-ripple:nth-of-type(2) { animation-delay: 1s; }
+    .pulse-ripple:nth-of-type(3) { animation-delay: 2s; }
+
+    .pulse-core {
+      fill: color-mix(in srgb, var(--brand-primary) 56%, var(--surface-1) 44%);
+      stroke: var(--text-main);
+      stroke-width: 3;
+      filter: drop-shadow(0 0 24px color-mix(in srgb, var(--brand-primary) 42%, transparent));
+      will-change: filter;
+      transition: fill var(--theme-transition), filter var(--theme-transition);
+    }
+
+    @keyframes ripple {
+      0%   { transform: scale(0.35); opacity: 0; }
+      12%  { opacity: 0.75; }
+      100% { transform: scale(1.55); opacity: 0; }
+    }
+
+    /* ════════════════════════════════════════════════════════════════
+       COMPONENT 4 — ISOMETRIC TERRAIN
+       ════════════════════════════════════════════════════════════════ */
+    .iso-scene {
+      position: relative;
+      width: 100%;
+      max-width: 640px;
+      height: clamp(280px, 34vw, 420px);
+      perspective: 1200px;
+      overflow: hidden;
+    }
+
+    .iso-grid {
+      position: absolute;
+      inset: 50% auto auto 50%;
+      transform: translate(-50%, -46%) rotateX(58deg) rotateZ(45deg);
+      transform-style: preserve-3d;
+      width: 360px;
+      height: 360px;
+    }
+
+    .iso-tile {
+      position: absolute;
+      width: 120px;
+      height: 120px;
+      transform-style: preserve-3d;
+      will-change: transform;
+      animation: float-tile 5.8s ease-in-out infinite;
+      animation-delay: calc(var(--delay) * 1ms);
+    }
+
+    .iso-face {
+      position: absolute;
+      inset: 0;
+      border: 1px solid color-mix(in srgb, var(--text-main) 10%, transparent);
+    }
+
+    .iso-face--top {
+      background: color-mix(in srgb, var(--surface-2) 68%, var(--brand-primary) 32%);
+      transform: translateZ(32px);
+      transition: background var(--theme-transition);
+    }
+
+    .iso-face--left {
+      background: color-mix(in srgb, var(--surface-1) 84%, var(--brand-secondary) 16%);
+      transform-origin: left center;
+      transform: rotateY(90deg) translateZ(60px) translateX(-60px);
+      width: 32px;
+      transition: background var(--theme-transition);
+    }
+
+    .iso-face--right {
+      background: color-mix(in srgb, var(--surface-offset) 88%, var(--brand-primary) 12%);
+      transform-origin: right center;
+      transform: rotateX(-90deg) translateZ(60px) translateY(60px);
+      height: 32px;
+      transition: background var(--theme-transition);
+    }
+
+    @keyframes float-tile {
+      0%,100% { transform: translate3d(0,0,0); }
+      50%      { transform: translate3d(0,0,calc(var(--lift) * 1px)); }
+    }
+
+    /* ════════════════════════════════════════════════════════════════
+       COMPONENT 5 — TOKEN STREAM
+       ════════════════════════════════════════════════════════════════ */
+    .token-stream {
+      width: 100%;
+      max-width: 100%;
+      position: relative;
+    }
+
+    .token-stream::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 4px;
+      background: linear-gradient(var(--brand-primary), var(--brand-secondary));
+      opacity: 0.72;
+      transition: background var(--theme-transition);
+    }
+
+    .token-stream__header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      margin-bottom: var(--space-5);
+      padding-left: var(--space-5);
+      color: var(--text-faint);
+      font-size: var(--text-xs);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .stream-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: var(--radius-full);
+      background: var(--brand-primary);
+      box-shadow: 0 0 16px color-mix(in srgb, var(--brand-primary) 46%, transparent);
+      will-change: opacity;
+      transition: background var(--theme-transition), box-shadow var(--theme-transition);
+    }
+
+    .token-stream pre {
+      padding-left: var(--space-5);
+      margin: 0;
+      border: 0;
+      background: transparent;
+      color: var(--text-main);
+      font-family: var(--font-mono);
+      font-size: var(--text-sm);
+      line-height: 1.85;
+      white-space: pre-wrap;
+    }
+
+    .token-stream__output { min-height: 160px; }
+
+    .token-stream__caret {
+      display: inline-block;
+      width: 2px;
+      height: 1.15em;
+      margin-left: 2px;
+      vertical-align: text-bottom;
+      background: var(--brand-primary);
+      box-shadow: 0 0 12px color-mix(in srgb, var(--brand-primary) 38%, transparent);
+      will-change: opacity;
+      animation: blink 1s steps(1) infinite;
+      transition: background var(--theme-transition), box-shadow var(--theme-transition);
+    }
+
+    .token-keyword  { color: var(--brand-secondary); transition: color var(--theme-transition); }
+    .token-string   { color: var(--brand-primary);   transition: color var(--theme-transition); }
+    .token-comment  { color: var(--text-faint); }
+    .token-function { color: var(--text-main); font-weight: 600; }
+
+    @keyframes blink {
+      0%,50%   { opacity: 1; }
+      50.01%,100% { opacity: 0; }
+    }
+
+    /* ════════════════════════════════════════════════════════════════
+       FOOTER
+       ════════════════════════════════════════════════════════════════ */
+    .showroom-footer {
+      margin-top: var(--space-10);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-4);
+      padding-top: var(--space-6);
+      border-top: 1px solid color-mix(in srgb, var(--text-main) 8%, transparent);
+      color: var(--text-faint);
+      font-size: var(--text-xs);
+    }
+
+    .footer-tokens {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-3);
+    }
+
+    .footer-token {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-1) var(--space-3);
+      border-radius: var(--radius-full);
+      background: color-mix(in srgb, var(--surface-2) 88%, transparent);
+      border: 1px solid color-mix(in srgb, var(--text-main) 8%, transparent);
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      transition:
+        border-color var(--theme-transition),
+        color var(--theme-transition);
+    }
+
+    .footer-token--active {
+      border-color: color-mix(in srgb, var(--brand-primary) 32%, transparent);
+      color: var(--brand-primary);
+    }
+
+    .footer-token-swatch {
+      width: 8px;
+      height: 8px;
+      border-radius: var(--radius-full);
+      transition: background var(--theme-transition);
+    }
+
+    /* ════════════════════════════════════════════════════════════════
+       RESPONSIVE BREAKPOINTS
+       ════════════════════════════════════════════════════════════════ */
+    /* ── Tablet (max 900px) ─── */
+    @media (max-width: 900px) {
+      .bento-cell--graph   { grid-column: span 12; }
+      .bento-cell--pulse   { grid-column: span 12; }
+      .bento-cell--bento   { grid-column: span 12; }
+      .bento-cell--terrain { grid-column: span 12; }
+      .bento-cell--stream  { grid-column: span 12; }
+
+      .bento-inner { min-height: 280px; }
+
+      .iso-scene { height: clamp(240px, 72vw, 380px); }
+
+      .glass-bento-card { max-width: 100%; }
+      .knowledge-graph { aspect-ratio: 4/3; }
+    }
+
+    /* ── Mobile (max 560px) ─── */
+    @media (max-width: 560px) {
+      body { padding: var(--space-4) var(--space-3) var(--space-12); }
+
+      .showroom-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .theme-toggle { width: 100%; justify-content: center; }
+
+      .bento-inner { min-height: 240px; padding: var(--space-8) var(--space-4) var(--space-4); }
+
+      .pulse-wrap { width: clamp(140px, 50vw, 220px); }
+
+      .iso-scene { height: 68vw; }
+
+      .meta-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <main class="showroom-page" id="main">
+
+    <!-- ── Header ─────────────────────────────────────── -->
+    <header class="showroom-header">
+      <div class="showroom-header__meta">
+        <span class="showroom-eyebrow">
+          <span class="showroom-eyebrow__dot" aria-hidden="true"></span>
+          Level 3 Component Library
+        </span>
+        <h1 class="showroom-title">Bento <span>Showroom</span></h1>
+      </div>
+
+      <button
+        class="theme-toggle"
+        id="themeToggleBtn"
+        aria-pressed="false"
+        aria-label="Toggle theme between Electric Cyan and Vibrant Orange"
+      >
+        <span class="theme-toggle__swatch" aria-hidden="true">
+          <span class="dot-a"></span>
+          <span class="dot-b"></span>
+        </span>
+        <span id="toggleLabel">Switch to Orange Theme</span>
+      </button>
+    </header>
+
+    <!-- ── Bento Grid ─────────────────────────────────── -->
+    <div class="bento-grid" role="region" aria-label="Component library showcase">
+
+      <!-- 1. Knowledge Graph -->
+      <article class="bento-cell bento-cell--graph" aria-label="Knowledge Graph component">
+        <span class="bento-cell__label">
+          <span class="bento-cell__label-dot" aria-hidden="true"></span>
+          Knowledge Graph
+        </span>
+        <div class="bento-inner">
+          <div class="knowledge-graph">
+            <svg class="kg-svg" viewBox="0 0 900 560" role="img" aria-labelledby="kg-title kg-desc">
+              <title id="kg-title">Knowledge Graph</title>
+              <desc id="kg-desc">Five connected floating nodes: Core, Data, UI, API, Flow.</desc>
+
+              <g class="kg-lines">
+                <line class="kg-line" x1="450" y1="280" x2="180" y2="120"></line>
+                <line class="kg-line" x1="450" y1="280" x2="720" y2="120"></line>
+                <line class="kg-line" x1="450" y1="280" x2="170" y2="430"></line>
+                <line class="kg-line" x1="450" y1="280" x2="730" y2="430"></line>
+                <line class="kg-line" x1="180" y1="120" x2="720" y2="120"></line>
+                <line class="kg-line" x1="170" y1="430" x2="730" y2="430"></line>
+              </g>
+
+              <g class="kg-node kg-node--core" transform="translate(450 280)">
+                <circle r="42"></circle>
+                <text y="2">Core</text>
+              </g>
+              <g class="kg-node" transform="translate(180 120)">
+                <circle r="30"></circle>
+                <text y="1">Data</text>
+              </g>
+              <g class="kg-node" transform="translate(720 120)">
+                <circle r="30"></circle>
+                <text y="1">UI</text>
+              </g>
+              <g class="kg-node" transform="translate(170 430)">
+                <circle r="30"></circle>
+                <text y="1">API</text>
+              </g>
+              <g class="kg-node" transform="translate(730 430)">
+                <circle r="30"></circle>
+                <text y="1">Flow</text>
+              </g>
+            </svg>
+          </div>
+        </div>
+      </article>
+
+      <!-- 2. Agentic Pulse -->
+      <article class="bento-cell bento-cell--pulse" aria-label="Agentic Pulse component">
+        <span class="bento-cell__label">
+          <span class="bento-cell__label-dot" aria-hidden="true"></span>
+          Agentic Pulse
+        </span>
+        <div class="bento-inner">
+          <div class="pulse-wrap">
+            <svg class="pulse-svg" viewBox="0 0 280 280" role="img" aria-labelledby="pulse-title">
+              <title id="pulse-title">Agentic Pulse — looping ripple animation</title>
+              <circle class="pulse-glow"   cx="140" cy="140" r="48"></circle>
+              <circle class="pulse-ripple" cx="140" cy="140" r="46"></circle>
+              <circle class="pulse-ripple" cx="140" cy="140" r="46"></circle>
+              <circle class="pulse-ripple" cx="140" cy="140" r="46"></circle>
+              <circle class="pulse-core"   cx="140" cy="140" r="34"></circle>
+            </svg>
+          </div>
+        </div>
+      </article>
+
+      <!-- 3. Glass Bento Card -->
+      <article class="bento-cell bento-cell--bento" aria-label="Glass Bento Card component">
+        <span class="bento-cell__label">
+          <span class="bento-cell__label-dot" aria-hidden="true"></span>
+          Glass Bento Card
+        </span>
+        <div class="bento-inner">
+          <div class="glass-bento-card" id="glassCard">
+            <span class="eyebrow">Signal Layer</span>
+            <h2>Frosted glass card with hover-glow border.</h2>
+            <p>Hover me. Pointer-tracked glow using <code>color-mix()</code> and CSS custom properties from the token layer.</p>
+            <div class="meta-grid" aria-label="Card metrics">
+              <div class="meta-cell"><strong>05</strong><span>Widgets</span></div>
+              <div class="meta-cell"><strong>24ms</strong><span>Latency</span></div>
+              <div class="meta-cell"><strong>99.2%</strong><span>Uptime</span></div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 4. Isometric Terrain -->
+      <article class="bento-cell bento-cell--terrain" aria-label="Isometric Terrain component">
+        <span class="bento-cell__label">
+          <span class="bento-cell__label-dot" aria-hidden="true"></span>
+          Isometric Terrain
+        </span>
+        <div class="bento-inner">
+          <section class="iso-scene">
+            <div class="iso-grid">
+              <div class="iso-tile" style="left:0;   top:0;   --lift:18; --delay:0;   animation-duration:5.6s">
+                <span class="iso-face iso-face--top"></span><span class="iso-face iso-face--left"></span><span class="iso-face iso-face--right"></span>
+              </div>
+              <div class="iso-tile" style="left:120px; top:0;   --lift:10; --delay:320; animation-duration:6.4s">
+                <span class="iso-face iso-face--top"></span><span class="iso-face iso-face--left"></span><span class="iso-face iso-face--right"></span>
+              </div>
+              <div class="iso-tile" style="left:240px; top:0;   --lift:22; --delay:680; animation-duration:5.2s">
+                <span class="iso-face iso-face--top"></span><span class="iso-face iso-face--left"></span><span class="iso-face iso-face--right"></span>
+              </div>
+              <div class="iso-tile" style="left:0;   top:120px; --lift:14; --delay:240; animation-duration:6.8s">
+                <span class="iso-face iso-face--top"></span><span class="iso-face iso-face--left"></span><span class="iso-face iso-face--right"></span>
+              </div>
+              <div class="iso-tile" style="left:120px; top:120px; --lift:28; --delay:120; animation-duration:5.4s">
+                <span class="iso-face iso-face--top"></span><span class="iso-face iso-face--left"></span><span class="iso-face iso-face--right"></span>
+              </div>
+              <div class="iso-tile" style="left:240px; top:120px; --lift:16; --delay:540; animation-duration:6.1s">
+                <span class="iso-face iso-face--top"></span><span class="iso-face iso-face--left"></span><span class="iso-face iso-face--right"></span>
+              </div>
+              <div class="iso-tile" style="left:0;   top:240px; --lift:24; --delay:760; animation-duration:5.9s">
+                <span class="iso-face iso-face--top"></span><span class="iso-face iso-face--left"></span><span class="iso-face iso-face--right"></span>
+              </div>
+              <div class="iso-tile" style="left:120px; top:240px; --lift:12; --delay:430; animation-duration:6.6s">
+                <span class="iso-face iso-face--top"></span><span class="iso-face iso-face--left"></span><span class="iso-face iso-face--right"></span>
+              </div>
+              <div class="iso-tile" style="left:240px; top:240px; --lift:20; --delay:880; animation-duration:5.1s">
+                <span class="iso-face iso-face--top"></span><span class="iso-face iso-face--left"></span><span class="iso-face iso-face--right"></span>
+              </div>
+            </div>
+          </section>
+        </div>
+      </article>
+
+      <!-- 5. Token Stream -->
+      <article class="bento-cell bento-cell--stream" aria-label="Token Stream component">
+        <span class="bento-cell__label">
+          <span class="bento-cell__label-dot" aria-hidden="true"></span>
+          Token Stream
+        </span>
+        <div class="bento-inner">
+          <div class="token-stream">
+            <div class="token-stream__header">
+              <span class="stream-dot" aria-hidden="true"></span>
+              <span>Live generation stream</span>
+            </div>
+            <pre class="token-stream__output" id="streamOutput" aria-live="polite" aria-label="Generated code output"></pre>
+          </div>
+        </div>
+      </article>
+
+    </div><!-- /bento-grid -->
+
+    <!-- ── Footer: live token readout ─────────────────── -->
+    <footer class="showroom-footer">
+      <span>frontend-slides · Level 3 Component Library · Phase 3</span>
+      <div class="footer-tokens" aria-label="Active design token values">
+        <span class="footer-token footer-token--active" id="ftPrimary">
+          <span class="footer-token-swatch" id="ftSwatchA" style="background:var(--brand-primary)"></span>
+          <code id="ftPrimaryValue">--brand-primary: #00d4e8</code>
+        </span>
+        <span class="footer-token footer-token--active" id="ftSecondary">
+          <span class="footer-token-swatch" id="ftSwatchB" style="background:var(--brand-secondary)"></span>
+          <code id="ftSecondaryValue">--brand-secondary: #5b21b6</code>
+        </span>
+      </div>
+    </footer>
+
+  </main>
+
+  <!-- ──────────────────────────────────────────────────────────────
+       SCRIPTS
+       ────────────────────────────────────────────────────────────── -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js"></script>
+  <script>
+  (() => {
+    'use strict';
+
+    /* ── Theme Toggle ─────────────────────────────────────────────
+       Swaps --brand-primary and --brand-secondary on :root
+       using CSS custom property override on the html element.
+       All transitions use `color var(--theme-transition)` so
+       every consumer flips in one coordinated 480ms sweep.
+    ──────────────────────────────────────────────────────────────── */
+    const THEMES = {
+      cyan:   { primary: '#00d4e8', primaryDim: '#009dae', secondary: '#5b21b6', secondaryDim: '#3d1480', label: 'Switch to Orange Theme' },
+      orange: { primary: '#ff6b2b', primaryDim: '#d44d14', secondary: '#c0392b', secondaryDim: '#962d22', label: 'Switch to Cyan Theme' }
+    };
+
+    let currentTheme = 'cyan';
+    const root   = document.documentElement;
+    const btn    = document.getElementById('themeToggleBtn');
+    const lbl    = document.getElementById('toggleLabel');
+    const ftPV   = document.getElementById('ftPrimaryValue');
+    const ftSV   = document.getElementById('ftSecondaryValue');
+
+    function applyTheme(name) {
+      const t = THEMES[name];
+      /* Direct CSS custom property override — no class swapping needed.
+         All color-mix() consumers automatically recompute. */
+      root.style.setProperty('--brand-primary',       t.primary);
+      root.style.setProperty('--brand-primary-dim',   t.primaryDim);
+      root.style.setProperty('--brand-secondary',     t.secondary);
+      root.style.setProperty('--brand-secondary-dim', t.secondaryDim);
+      root.setAttribute('data-theme', name);
+      btn.setAttribute('aria-pressed', name === 'orange' ? 'true' : 'false');
+      lbl.textContent = t.label;
+      ftPV.textContent = `--brand-primary: ${t.primary}`;
+      ftSV.textContent = `--brand-secondary: ${t.secondary}`;
+      currentTheme = name;
+    }
+
+    btn.addEventListener('click', () => {
+      applyTheme(currentTheme === 'cyan' ? 'orange' : 'cyan');
+    });
+
+    /* ── Pointer-tracked glow on Glass Bento Card ─────────────── */
+    const glassCard = document.getElementById('glassCard');
+    glassCard.addEventListener('pointermove', (e) => {
+      const r = glassCard.getBoundingClientRect();
+      glassCard.style.setProperty('--pointer-x', `${e.clientX - r.left}px`);
+      glassCard.style.setProperty('--pointer-y', `${e.clientY - r.top}px`);
+    });
+
+    /* ── Knowledge Graph — Anime.js float + line sync ─────────── */
+    (function initGraph() {
+      const svg   = document.querySelector('.kg-svg');
+      const nodes = [...svg.querySelectorAll('.kg-node')];
+      const lines = [...svg.querySelectorAll('.kg-line')];
+
+      const lineMap = [[0,1],[0,2],[0,3],[0,4],[1,2],[3,4]];
+
+      /* Base positions extracted from transform attr */
+      const bases = nodes.map(n => {
+        const m = n.getAttribute('transform').match(/translate\(([\d.]+)\s+([\d.]+)\)/);
+        return { x: +m[1], y: +m[2] };
+      });
+
+      /* Per-node float offsets */
+      const offsets = [
+        { x: 0,  y: 0  },
+        { x:-6,  y:-9  },
+        { x: 7,  y:-11 },
+        { x:-9,  y: 7  },
+        { x: 10, y: 8  }
+      ];
+
+      /* Current animated positions (separate from DOM) */
+      const pos = bases.map(b => ({ ...b }));
+
+      function syncLines() {
+        lineMap.forEach(([a, b], i) => {
+          lines[i].setAttribute('x1', pos[a].x);
+          lines[i].setAttribute('y1', pos[a].y);
+          lines[i].setAttribute('x2', pos[b].x);
+          lines[i].setAttribute('y2', pos[b].y);
+        });
+      }
+
+      nodes.forEach((node, i) => {
+        const target = { x: bases[i].x, y: bases[i].y };
+
+        anime({
+          targets: target,
+          x: bases[i].x + offsets[i].x,
+          y: bases[i].y + offsets[i].y,
+          duration: 4200 + i * 350,
+          delay: i * 120,
+          direction: 'alternate',
+          easing: 'easeInOutSine',
+          loop: true,
+          update() {
+            pos[i].x = target.x;
+            pos[i].y = target.y;
+            node.setAttribute('transform', `translate(${target.x} ${target.y})`);
+            syncLines();
+          }
+        });
+      });
+
+      /* Animate line draw-on */
+      lines.forEach((line, i) => {
+        try {
+          const len = line.getTotalLength();
+          line.style.strokeDasharray  = len;
+          line.style.strokeDashoffset = len;
+          anime({
+            targets: line,
+            strokeDashoffset: [len, 0],
+            opacity: [0.18, 0.65],
+            duration: 2200 + i * 120,
+            delay: i * 180,
+            direction: 'alternate',
+            easing: 'easeInOutSine',
+            loop: true
+          });
+        } catch(e) { /* SVG not in DOM yet — skip gracefully */ }
+      });
+
+      syncLines();
+    })();
+
+    /* ── Token Stream — Typewriter ────────────────────────────── */
+    (function initStream() {
+      const output = document.getElementById('streamOutput');
+
+      const segments = [
+        '<span class="token-comment">// Building a reusable slide primitive</span>',
+        '\n',
+        '<span class="token-keyword">const</span> palette = {',
+        '\n  primary:   <span class="token-string">"var(--brand-primary)"</span>,',
+        '\n  secondary: <span class="token-string">"var(--brand-secondary)"</span>',
+        '\n};',
+        '\n\n',
+        '<span class="token-keyword">function</span> <span class="token-function">composeSlide</span>() {',
+        '\n  <span class="token-keyword">return</span> createComponent(<span class="token-string">"signal-card"</span>, palette);',
+        '\n}',
+        '\n\n',
+        '<span class="token-comment">// ✓ Stream complete</span>'
+      ];
+
+      let segI = 0, charI = 0, fullText = '';
+      const caret = '<span class="token-stream__caret"></span>';
+
+      function tick() {
+        if (segI >= segments.length) {
+          output.innerHTML = fullText + caret;
+          return;
+        }
+        const seg = segments[segI];
+        /* If segment is an HTML tag, commit it whole */
+        if (seg.startsWith('<span') || seg === '\n' || seg === '\n\n') {
+          fullText += seg;
+          segI++;
+          output.innerHTML = fullText + caret;
+          setTimeout(tick, seg.includes('comment') ? 80 : 30);
+        } else {
+          /* Character-by-character for visible text */
+          if (charI < seg.length) {
+            fullText += seg[charI];
+            charI++;
+            output.innerHTML = fullText + caret;
+            const c = seg[charI - 1];
+            setTimeout(tick, c === ' ' ? 22 : 44);
+          } else {
+            segI++; charI = 0;
+            setTimeout(tick, 60);
+          }
+        }
+      }
+
+      setTimeout(tick, 800);
+    })();
+
+  })();
+  </script>
+</body>
+</html>
