@@ -1,0 +1,202 @@
+/*
+ * base.css — Global Resets & Foundation
+ * Level 3 Component Library for frontend-slides
+ *
+ * Architecture: Phase 1
+ * Depends on: tokens.css (must be loaded before this file)
+ *
+ * Load order in slide HTML:
+ *   <link rel="stylesheet" href="../library/tokens.css">
+ *   <link rel="stylesheet" href="../library/base.css">
+ *   <link rel="stylesheet" href="./slide-specific.css">
+ */
+
+/* ─── Box Model Reset ───────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ─── Root & Document ───────────────────────────────────── */
+html {
+  -webkit-text-size-adjust: none;
+  -moz-text-size-adjust: none;
+  text-size-adjust: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  hanging-punctuation: first last;
+}
+
+body {
+  min-height: 100dvh;
+  line-height: 1.6;
+  font-family: var(--font-body, 'Inter', 'Helvetica Neue', Arial, sans-serif);
+  font-size: var(--text-base);
+  color: var(--text-main);
+  background-color: var(--bg-main);
+  /* Prevent invisible text during font load */
+  font-display: swap;
+}
+
+/* ─── Media Elements ────────────────────────────────────── */
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* ─── Lists ─────────────────────────────────────────────── */
+ul[role="list"],
+ol[role="list"] {
+  list-style: none;
+}
+
+/* ─── Interactive Inherit ───────────────────────────────── */
+input,
+button,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
+/* ─── Typography Defaults ───────────────────────────────── */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display, 'Inter', 'Helvetica Neue', Arial, sans-serif);
+  text-wrap: balance;
+  line-height: 1.15;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+p, li, figcaption {
+  text-wrap: pretty;
+  max-width: 72ch;
+  color: var(--text-muted);
+}
+
+a {
+  color: var(--brand-primary);
+  text-decoration: none;
+  transition: color var(--transition-interactive);
+}
+
+a:hover {
+  color: var(--brand-primary-dim);
+}
+
+code, pre {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+}
+
+pre {
+  overflow-x: auto;
+  background: var(--surface-2);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+/* ─── Selections ────────────────────────────────────────── */
+::selection {
+  background: rgba(0, 212, 232, 0.2);  /* --brand-primary at 20% */
+  color: var(--text-main);
+}
+
+/* ─── Focus Rings ───────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+/* ─── Transitions on Interactive Elements ──────────────── */
+a,
+button,
+[role="button"],
+[role="link"],
+input,
+textarea,
+select {
+  transition:
+    color var(--transition-interactive),
+    background var(--transition-interactive),
+    border-color var(--transition-interactive),
+    box-shadow var(--transition-interactive),
+    opacity var(--transition-interactive);
+}
+
+/* ─── Glass Utility ─────────────────────────────────────── */
+/*
+ * Apply to any panel, card, or overlay that should use the
+ * glassmorphism treatment defined in tokens.css:
+ *
+ *   <div class="glass-panel"> ... </div>
+ */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+}
+
+/* ─── Screen Reader Only ─────────────────────────────────── */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ─── Reduced Motion ─────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ─── Slide Canvas Utility ──────────────────────────────── */
+/*
+ * Applied to the root element of any frontend-slides slide.
+ * Establishes the 1920×1080 viewport-scaled coordinate space.
+ */
+.slide-canvas {
+  width: var(--slide-w);
+  height: var(--slide-h);
+  background: var(--bg-main);
+  color: var(--text-main);
+  font-family: var(--font-body);
+  overflow: hidden;
+  position: relative;
+}

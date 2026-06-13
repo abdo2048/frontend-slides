@@ -1,0 +1,108 @@
+/*
+ * tokens.css — Neutral Canonical Brand
+ * Level 3 Component Library for frontend-slides
+ *
+ * Architecture: Phase 1
+ * Brand: Neutral Canonical — re-skinable per client
+ * Palette: Dark Charcoal + Off-white + Electric Cyan + Deep Purple + Glass
+ */
+
+:root {
+  /* ─── Surfaces ─────────────────────────────────────────── */
+  --bg-main:           #1a1a1d;   /* Dark Charcoal */
+  --surface-1:         #222226;
+  --surface-2:         #2a2a2f;
+  --surface-offset:    #141416;
+
+  /* ─── Typography ───────────────────────────────────────── */
+  --text-main:         #f0eeeb;   /* Off-white */
+  --text-muted:        #a8a6a2;
+  --text-faint:        #6b6966;
+
+  /* ─── Brand ────────────────────────────────────────────── */
+  --brand-primary:     #00d4e8;   /* Electric Cyan */
+  --brand-primary-dim: #009dae;
+  --brand-secondary:   #5b21b6;   /* Deep Purple */
+  --brand-secondary-dim: #3d1480;
+
+  /* ─── Glass ────────────────────────────────────────────── */
+  /* Usage: background: var(--glass-bg); backdrop-filter: blur(var(--glass-blur)); */
+  --glass-bg:          rgba(255, 255, 255, 0.05);
+  --glass-blur:        10px;
+  --glass-border:      rgba(255, 255, 255, 0.08);
+
+  /* ─── Type Scale (fluid, clamp-based) ──────────────────── */
+  --text-xs:    clamp(0.75rem,  0.7rem  + 0.25vw, 0.875rem);  /* 12–14px  */
+  --text-sm:    clamp(0.875rem, 0.8rem  + 0.35vw, 1rem);      /* 14–16px  */
+  --text-base:  clamp(1rem,     0.95rem + 0.25vw, 1.125rem);  /* 16–18px  */
+  --text-lg:    clamp(1.125rem, 1rem    + 0.75vw, 1.5rem);    /* 18–24px  */
+  --text-xl:    clamp(1.5rem,   1.2rem  + 1.25vw, 2.25rem);   /* 24–36px  */
+  --text-2xl:   clamp(2rem,     1.2rem  + 2.5vw,  3.5rem);    /* 32–56px  */
+  --text-3xl:   clamp(2.5rem,   1rem    + 4vw,    5rem);       /* 40–80px  */
+  --text-hero:  clamp(3rem,     0.5rem  + 7vw,    8rem);       /* 48–128px */
+
+  /* ─── Font Families ────────────────────────────────────── */
+  /* Override per slide theme via a single variable swap */
+  --font-display: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  --font-body:    'Inter', 'Helvetica Neue', Arial, sans-serif;
+  --font-mono:    'Fira Code', 'Cascadia Code', 'Courier New', monospace;
+
+  /* ─── Spacing (4px grid) ───────────────────────────────── */
+  --space-1:   0.25rem;   /*  4px */
+  --space-2:   0.5rem;    /*  8px */
+  --space-3:   0.75rem;   /* 12px */
+  --space-4:   1rem;      /* 16px */
+  --space-5:   1.25rem;   /* 20px */
+  --space-6:   1.5rem;    /* 24px */
+  --space-8:   2rem;      /* 32px */
+  --space-10:  2.5rem;    /* 40px */
+  --space-12:  3rem;      /* 48px */
+  --space-16:  4rem;      /* 64px */
+  --space-20:  5rem;      /* 80px */
+  --space-24:  6rem;      /* 96px */
+
+  /* ─── Border Radius ────────────────────────────────────── */
+  --radius-sm:   0.25rem;    /*  4px */
+  --radius-md:   0.5rem;     /*  8px */
+  --radius-lg:   0.75rem;    /* 12px */
+  --radius-xl:   1rem;       /* 16px */
+  --radius-2xl:  1.5rem;     /* 24px */
+  --radius-full: 9999px;
+
+  /* ─── Transitions ──────────────────────────────────────── */
+  --transition-fast:        120ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-interactive: 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-slow:        360ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* ─── Shadows (dark-surface tuned) ─────────────────────── */
+  --shadow-sm:  0 1px 3px  rgba(0, 0, 0, 0.35);
+  --shadow-md:  0 4px 14px rgba(0, 0, 0, 0.45);
+  --shadow-lg:  0 12px 40px rgba(0, 0, 0, 0.55);
+
+  /* ─── Slide Layout ─────────────────────────────────────── */
+  --slide-w:       1920px;
+  --slide-h:       1080px;
+  --slide-padding: var(--space-12);
+  --slide-gap:     var(--space-8);
+
+  /* ─── Content Widths ───────────────────────────────────── */
+  --content-narrow:  640px;
+  --content-default: 960px;
+  --content-wide:    1200px;
+}
+
+/*
+ * ── Reskin Guide ─────────────────────────────────────────────
+ *
+ * To apply a client brand, create a new file (e.g. brand-acme.css)
+ * and override just the variables you need:
+ *
+ *   :root {
+ *     --bg-main:        #0d1117;        (client dark BG)
+ *     --brand-primary:  #f97316;        (client accent)
+ *     --brand-secondary:#1d4ed8;        (client secondary)
+ *     --font-display:   'Client Font', sans-serif;
+ *   }
+ *
+ * Everything else inherits the Neutral Canonical defaults above.
+ * ─────────────────────────────────────────────────────────── */
